@@ -33,6 +33,7 @@ export const TRUST_BADGE: TrustBadgeData = {
   title: 'Trusted by 10,000+ Families',
   subtitle: 'Across 100+ Cities',
   userCount: '10K+',
+  avatars: ['A', 'B', 'C'],
 }
 
 /**
@@ -74,8 +75,8 @@ export const SUBHEADING_FEATURES = [
  * Login tabs
  */
 export const LOGIN_TABS = [
-  { id: 'mobile', label: 'Login with Mobile', icon: 'smartphone' },
-  { id: 'email', label: 'Login with Email', icon: 'mail' },
+  { value: 'mobile', label: 'Login with Mobile', icon: 'smartphone' },
+  { value: 'email', label: 'Login with Email', icon: 'mail' },
 ] as const
 
 /**

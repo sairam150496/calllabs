@@ -91,7 +91,92 @@ ComponentName/
 
 - **NO inline constants** - Move all constant arrays/objects to `constants.ts`
 - **NO style variants in component** - Move CVA variants to `styles.ts`
+- **NO inline functions in JSX** - Define all event handlers as named functions
+- **MAX 400 lines per file** - Split large components into smaller ones
+- **Follow SRP** - Each component should have a single responsibility
+- **Follow DRY** - Don't repeat yourself, extract reusable logic
 - **Keep components clean** - Only logic and JSX in component file
+
+**CRITICAL: FILE SIZE & COMPONENT SPLITTING**
+
+❌ **NEVER** have files with more than 400 lines
+- If a file exceeds 400 lines, it MUST be split into smaller components
+- Each component should have a single, clear responsibility (SRP)
+- Extract repeated logic into reusable functions/hooks (DRY)
+- ❌ **NEVER** use `any` type - Always define proper TypeScript types
+
+✅ **ALWAYS** split large components with proper folder structure:
+```
+// ❌ BAD - 600 line Login.tsx with everything
+Login/
+└── Login.tsx (600 lines)
+
+// ✅ GOOD - Split into focused components with mobile/desktop separation
+Login/
+├── index.tsx                    # Clean export
+├── Login.tsx                    # Main orchestrator (< 200 lines)
+├── types.ts                     # TypeScript interfaces
+├── constants.ts                 # Static data
+├── helpers.ts                   # Utility functions
+├── hooks/                       # Custom hooks
+│   └── useOtpFlow.ts           # OTP state management logic
+├── components/                  # Shared components
+│   ├── LoginTabs.tsx
+│   └── Footer.tsx
+├── mobile/                      # Mobile-specific components
+│   ├── MobilePhoneInput.tsx
+│   ├── MobileOtpInput.tsx
+│   └── MobilePromoSection.tsx
+└── desktop/                     # Desktop-specific components
+    ├── DesktopPhoneInput.tsx
+    ├── DesktopOtpInput.tsx
+    └── DesktopPromoPanel.tsx
+```
+
+**Folder Structure Rules:**
+1. **mobile/** - Components optimized for mobile viewport
+2. **desktop/** - Components optimized for desktop viewport
+3. **components/** - Shared components used by both
+4. **hooks/** - Reusable logic (state, API calls)
+5. **helpers.ts** - Pure utility functions
+
+**When to split:**
+1. Component exceeds 400 lines → Split immediately
+2. Different mobile/desktop UIs → Create mobile/ and desktop/ folders
+3. Component has multiple distinct UI sections → Split into sub-components
+4. Logic is repeated → Extract into hooks/helpers
+5. Rendering is conditional → Split into separate components
+
+**CRITICAL: NO INLINE FUNCTIONS IN JSX**
+
+❌ **NEVER** use inline arrow functions in JSX:
+```tsx
+// ❌ BAD - Creates new function on every render
+<Button onClick={() => handleClick(id)} />
+<Button onClick={() => { doSomething(); doMore() }} />
+<div onMouseEnter={() => setHovered(true)} />
+```
+
+✅ **ALWAYS** define named functions:
+```tsx
+// ✅ GOOD - Define handler functions
+const handleButtonClick = () => {
+  handleClick(id)
+}
+
+const handleMouseEnter = () => {
+  setHovered(true)
+}
+
+return (
+  <>
+    <Button onClick={handleButtonClick} />
+    <div onMouseEnter={handleMouseEnter} />
+  </>
+)
+```
+
+**Reason**: Inline functions create new instances on every render, causing unnecessary re-renders and performance issues.
 
 ### Common Helpers
 

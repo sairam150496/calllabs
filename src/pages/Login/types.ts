@@ -12,6 +12,7 @@ export interface TrustBadgeData {
   title: string
   subtitle: string
   userCount: string
+  avatars: string[]
 }
 
 export interface BottomFeature {

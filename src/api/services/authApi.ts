@@ -110,34 +110,57 @@ export const authApi = {
   },
 
   // Send OTP to phone
-  sendOTP: async (phone: string): Promise<{ success: boolean; message: string }> => {
+  sendOTP: async (phone: string): Promise<{ phoneNumber: string; expiresAt: string; message: string }> => {
     if (USE_MOCKS) {
       await new Promise((resolve) => setTimeout(resolve, 500))
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString() // 10 min from now
       return {
-        success: true,
-        message: `OTP sent to ${phone}. Mock OTP: 123456`,
+        phoneNumber: phone,
+        expiresAt,
+        message: `OTP has been sent to your mobile number`,
       }
     }
 
-    const { data } = await apiClient.post('/auth/send-otp', { phone })
-    return data
+    const { data } = await apiClient.post('/otp/send', { phoneNumber: phone })
+    return data.data
   },
 
   // Verify OTP
-  verifyOTP: async (data: OTPVerification): Promise<{ success: boolean }> => {
+  verifyOTP: async (data: OTPVerification): Promise<{
+    phoneNumber: string;
+    expiresAt: string;
+    message: string;
+    verified: boolean;
+    verifiedAt: string
+  }> => {
     if (USE_MOCKS) {
       await new Promise((resolve) => setTimeout(resolve, 500))
       const validOTP = mockOTPs[data.phone] === data.otp
 
       if (!validOTP) {
-        throw new Error('Invalid OTP')
+        const error: any = new Error('Invalid OTP')
+        error.response = {
+          data: {
+            error: 'Bad Request',
+            errorCode: 'INVALID_OTP',
+            message: 'Invalid OTP',
+            status: 400,
+          }
+        }
+        throw error
       }
 
-      return { success: true }
+      return {
+        phoneNumber: data.phone,
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+        message: 'OTP verified successfully',
+        verified: true,
+        verifiedAt: new Date().toISOString(),
+      }
     }
 
-    const { data: response } = await apiClient.post('/auth/verify-otp', data)
-    return response
+    const { data: response } = await apiClient.post('/otp/verify', { phoneNumber: data.phone, otp: data.otp })
+    return response.data
   },
 
   // Logout
