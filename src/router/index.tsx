@@ -1,8 +1,9 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
-import { PUBLIC_ROUTES } from '@/config/routes'
+import { AUTH_ROUTES, PUBLIC_ROUTES } from '@/config/routes'
 import { ComingSoon } from '@/pages/ComingSoon'
 import { Home } from '@/pages/Home'
+import { Login } from '@/pages/Login'
 import { NotFound } from '@/pages/NotFound'
 
 export const AppRouter = () => {
@@ -29,6 +30,10 @@ export const AppRouter = () => {
           path={PUBLIC_ROUTES.TERMS}
           element={<ComingSoon title="Terms & Conditions" />}
         />
+
+        {/* Auth Routes */}
+        <Route path={AUTH_ROUTES.LOGIN} element={<Login />} />
+        <Route path={AUTH_ROUTES.REGISTER} element={<ComingSoon title="Register" />} />
 
         {/* 404 Not Found */}
         <Route path="*" element={<NotFound />} />
